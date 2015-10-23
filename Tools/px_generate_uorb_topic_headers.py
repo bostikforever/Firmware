@@ -99,24 +99,20 @@ def convert_dir(inputdir, outputdir, templatedir):
         Converts all .msg files in inputdir to uORB header files
         """
 
-        # Find the most recent modification time in input dir
-        maxinputtime = 0
-        for f in os.listdir(inputdir):
-                fni = os.path.join(inputdir, f)
-                if os.path.isfile(fni):
-                    it = os.path.getmtime(fni)
-                    if it > maxinputtime:
-                        maxinputtime = it;
+        def find_most_recent(_dir):
+            # Find the most recent modification time in _dir
+            maxtime = 0
+            if os.path.isdir(outputdir):
+                for f in os.listdir(_dir):
+                        fni = os.path.join(_dir, f)
+                        if os.path.isfile(fni):
+                            it = os.path.getmtime(fni)
+                            if it > maxtime:
+                                maxtime = it;
+            return maxtime
 
-        # Find the most recent modification time in output dir
-        maxouttime = 0
-        if os.path.isdir(outputdir):
-            for f in os.listdir(outputdir):
-                    fni = os.path.join(outputdir, f)
-                    if os.path.isfile(fni):
-                        it = os.path.getmtime(fni)
-                        if it > maxouttime:
-                            maxouttime = it;
+        maxinputtime = find_most_recent(inputdir);
+        maxouttime = find_most_recent(outputdir);
 
         # Do not generate if nothing changed on the input
         if (maxinputtime != 0 and maxouttime != 0 and maxinputtime < maxouttime):
